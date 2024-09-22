@@ -4,11 +4,16 @@ from rest_framework.serializers import ModelSerializer
 
 from .models import Snippet , LANGUAGE_CHOICES , STYLE_CHOICES
 
-class UserSerializer(serializers.HyperlinkedModelSerializer):
+# class UserSerializer(serializers.HyperlinkedModelSerializer):
+#     class Meta:
+#         model = User
+#         fields = ['url', 'username', 'email', 'groups']
+class UserSerializer(serializers.ModelSerializer):
+    snippets = serializers.PrimaryKeyRelatedField(many=True, queryset=Snippet.objects.all())
+
     class Meta:
         model = User
-        fields = ['url', 'username', 'email', 'groups']
-
+        fields = ['id','username','snippets']
 
 class GroupSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
@@ -38,6 +43,7 @@ class GroupSerializer(serializers.HyperlinkedModelSerializer):
 #USING MODEL SERIALIZER , Defualt methods for create() and Update() Methods, Shortcut for creating Serializer Classes
 
 class SnippetSerializer(serializers.ModelSerializer):
+    owner = serializers.ReadOnlyField(source='owner.username')
     class Meta:
         model = Snippet
-        fields = ['id' ,'title' , 'code' , 'linenos', 'language', 'style']
+        fields = ['id' ,'title' , 'code' , 'linenos', 'language', 'style','owner']
